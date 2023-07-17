@@ -424,3 +424,89 @@ def find_missing_peaks(a_peaks, b_peaks, index_comparing):
     # then the index N is stored in missing_a_peaks
     # missing_a_peaks are indices of the b array, with elements that a doesn't contain
     return missing_a_peaks, missing_b_peaks
+
+
+
+
+# This function takes mainly the amount of windows one can have in the available time and calculate the overlapping mean values
+
+def overlapping_mean(total_time,heart_beat_time, time_window_length, windows): 
+    # This block calculates the mean heartrate of the different windows 
+    print('total_time: '+str(total_time) + ' mins')
+    print('')
+    print('windows: '+ str(windows))
+
+    first_array = np.delete(heart_beat_time,0)
+    second_array = np.delete(heart_beat_time,-1)
+
+    dif = (first_array - second_array)/1000
+    heart_rate = 60/dif
+
+    # k is the index where the cumulative sum of time is greater than half the time interval
+    k = 0
+    cmltive_time = 0
+
+    #The even_idx and odd_idx arrays store the indices where the windows start and finish.
+    even_idx = []
+    odd_idx = [0]
+    odd_window_mean = []
+    even_window_mean = []
+
+    # The total time of the interval will be defined by the amount of windows one chooses, the overlap and the length of the windows. 
+    #This first loop is to find the index of the beginning of the second window 
+    while cmltive_time < (time_window_length*60)/2 : 
+        k = k + 1
+        cmltive_time = np.sum(dif[0:k])
+    even_idx = np.append(even_idx,k-1)
+
+    leading_time = time_window_length*60
+
+    window_counter = 1
+    odd = True 
+
+
+    #At the end of the while there is still one more window to calculate its mean.
+    while window_counter < windows : 
+        while cmltive_time < leading_time: 
+            k = k + 1 
+            cmltive_time = np.sum(dif[0:k])
+
+        # The reason we append the index k-1 is because when the condition cmltive_time < leading_time isn't met you actually want 
+        # the index from the sample before where the condition was actually met, which is k-1. 
+
+        # The 'dif' array is actually the heartrate array. So what we need to do is to consider all of the heartbeats in that array for the established windows. 
+
+        if odd:
+            odd = False 
+            odd_idx = np.append(odd_idx,k-1)
+            odd_idx = np.asarray(odd_idx, dtype = 'int')
+            odd_window_mean = np.append(odd_window_mean ,np.mean(heart_rate[odd_idx[-2]:odd_idx[-1]]))
+
+        else: 
+            odd = True
+            even_idx = np.append(even_idx,k-1)
+            even_idx = np.asarray(even_idx, dtype = 'int')
+            even_window_mean = np.append(even_window_mean, np.mean(heart_rate[even_idx[-2]:even_idx[-1]]))
+
+        leading_time = (time_window_length + (1-overlap_window)*(time_window_length)*(window_counter))*60
+        window_counter = window_counter + 1
+
+    #In this last part we include the mean of the last window. 
+
+    if odd:
+        odd_idx=np.append(odd_idx,len(dif))
+        odd_window_mean = np.append(odd_window_mean ,np.mean(heart_rate[odd_idx[-2]:odd_idx[-1]]))
+
+    else: 
+        even_idx=np.append(even_idx,len(dif))
+        even_window_mean = np.append(even_window_mean ,np.mean(heart_rate[even_idx[-2]:even_idx[-1]]))
+
+    overlap_mean_values=odd_window_mean
+    adding = 1
+
+    #Joinning the mean odd and even window arrays to a single one in order. 
+    for j in range(0, len(even_window_mean)):
+        overlap_mean_values = np.insert(overlap_mean_values,j+adding,even_window_mean[j])
+        adding = adding + 1
+    
+    return overlap_mean_values
