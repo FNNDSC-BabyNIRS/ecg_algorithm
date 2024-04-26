@@ -1,5 +1,9 @@
-import nirscloud_util_meta
-import nirscloud_util_hdfs
+#This try is implemented to avoid a failure when running locally
+try: 
+    import nirscloud_util_meta
+    import nirscloud_util_hdfs
+except: 
+    pass
 import logging
 import pandas as pd
 import numpy as np
