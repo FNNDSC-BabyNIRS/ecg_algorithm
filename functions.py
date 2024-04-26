@@ -292,6 +292,7 @@ def dif_eq_window_integration(function,window_length,divide):
     return result
 
 # This function returns the indices of the intaken data where the fiducial point is
+# test_segments is the amount of peaks to set a threshold for the upcoming peaks 
 def find_fiducial_point(y,x,test_segments,segment_duration,window_length):
     fiducial_point = []
     peak = 0
