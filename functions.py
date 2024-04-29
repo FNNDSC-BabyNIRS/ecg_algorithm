@@ -30,6 +30,8 @@ def time_f(time_array):
 
     return (np.array([str(minutes)+':'+str(seconds)+':'+str(milis) for minutes, seconds, milis in zip(mins,sec,mili)]))
 
+
+
 # raw_sample is for the sample extracted that includes the peaks from the cluster already
 
 
