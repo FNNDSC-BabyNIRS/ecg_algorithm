@@ -323,7 +323,7 @@ def find_fiducial_point(y,x,test_segments,segment_duration,window_length):
                         
             else: 
                 b_derivative = (y[i]-y[i-1])/(x[i]-x[i-1])
-                if (f_derivative < 0) and (b_derivative > 0) and y[i]>0.5*peak_average: 
+                if (f_derivative < 0) and (b_derivative > 0) and y[i]>0.6*peak_average: 
                     peak = y[i]
                     found_p = True
                     
